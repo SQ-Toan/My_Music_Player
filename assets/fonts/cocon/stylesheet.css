@@ -1,0 +1,18 @@
+@font-face {
+    font-family: 'VN Cocon';
+    src: url('VN-Cocon-Bold.woff2') format('woff2'),
+        url('VN-Cocon-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'VN Cocon';
+    src: url('VN-Cocon-Regular.woff2') format('woff2'),
+        url('VN-Cocon-Regular.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+

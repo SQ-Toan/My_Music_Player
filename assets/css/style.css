@@ -1,0 +1,36 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+:root {
+}
+html {
+    font-size: 62.5%;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.6rem;
+    font-family: "Gotham";
+    background: #f2e6e8;
+}
+
+a {
+    text-decoration: none;
+}
+
+input,
+button,
+select,
+textarea {
+    font-size: inherit;
+    font-family: inherit;
+}
+
+h1 {
+    font-size: 1.8rem;
+}
