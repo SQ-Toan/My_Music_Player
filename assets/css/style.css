@@ -5,6 +5,7 @@
 }
 :root {
     --primary-color: #15a6e9;
+    --scroll-bar-color: rgba(109, 213, 237, 0.8);
     --body-color: #f2e6e8;
 }
 html {
@@ -44,7 +45,7 @@ textarea {
     background: #111;
 }
 ::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
+    background: var(--scroll-bar-color);
     border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -103,7 +104,7 @@ i.active {
     background: linear-gradient(
         to top,
         rgba(255, 0, 0, 0),
-        rgba(109, 213, 237, 1)
+        rgba(109, 213, 237, 0.7)
     );
     transform-origin: 0% 0%;
     transition: all 0.3s ease;
@@ -124,10 +125,7 @@ i.active {
     width: 100%;
     padding-top: 100%;
     border-radius: 50%;
-    background: url("/assets/imgs/xesi.jpg") no-repeat;
-    background-size: cover;
-    background-position: center;
-    transition: 0% 0%;
+
     margin: auto;
 }
 
@@ -216,6 +214,7 @@ i.active {
 
 /* info */
 .info {
+    font-family: "VN Cocon";
     position: absolute;
     top: 440px;
     left: 50%;
