@@ -59,6 +59,11 @@ textarea {
     background-color: #fff;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
     overflow: hidden;
+    background: linear-gradient(
+        to top,
+        rgba(109, 213, 237, 1),
+        rgba(255, 0, 0, 0)
+    );
 }
 
 i {
@@ -201,6 +206,84 @@ i.active {
     position: absolute;
     right: 23px;
     font-size: 1.4rem;
-    bottom: 0;
+    bottom: -60px;
     transition: all 0.3s ease;
+}
+
+.container.active .current-song-title {
+    bottom: 10px;
+}
+
+/* info */
+.info {
+    position: absolute;
+    top: 440px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.info h2 {
+    font-size: 1.6rem;
+    margin-bottom: 5px;
+}
+.info h3 {
+    font-size: 1rem;
+    color: #6d6d6d;
+}
+
+.container.active .info {
+    top: 60px;
+    left: 126px;
+    text-align: left;
+    transform: translateX(0);
+    color: #111;
+}
+
+/* Controls */
+.control {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.6rem;
+    width: 100%;
+    height: 35px;
+    position: absolute;
+    bottom: 100px;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.control #playpause {
+    font-size: 4rem;
+}
+
+.container.active .control {
+    position: absolute;
+    width: 216px;
+    bottom: 4px;
+    left: -44px;
+    transform: scale(0.6);
+}
+
+/* more control */
+.more-control {
+    font-size: 1.5rem;
+    height: 45px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    z-index: 20;
+    transition: all 0.3s ease;
+    color: #6d6d6d;
+}
+
+.container.active .more-control {
+    bottom: -60px;
 }
