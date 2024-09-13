@@ -14,6 +14,12 @@ const favourite = $("#favourite");
 const playPauseBtn = $("#playpause");
 const nextBtn = $("#next");
 const prevBtn = $("#prev");
+const shuffleBtn = $("#shuffle");
+const repeatBtn = $("#repeat");
+const progressBar = $(".bar");
+const progressDot = $(".dot");
+const currentTimeEl = $(".current-time");
+const durationEl = $(".duration");
 
 // App
 const app = {
@@ -178,9 +184,42 @@ const app = {
             favourite.classList.toggle("active");
             _this.addToFavouritesOnScreen(_this.currentIndex);
         });
-        // tự động chuyển bài khi bài nhạc hết
+
+        // Làm chức năng random bài hát
+        shuffleBtn.addEventListener("click", () => {
+            _this.isRandom = !_this.isRandom;
+            shuffleBtn.classList.toggle("active");
+
+            _this.shuffleSong();
+        });
+
+        // Làm chức năng repeat bài hát
+        repeatBtn.addEventListener("click", () => {
+            _this.isRepeat = !_this.isRepeat;
+            repeatBtn.classList.toggle("active");
+
+            _this.repeatSong();
+        });
+
+        // Tự động chuyển bài khi bài nhạc hết
         _this.audio.addEventListener("ended", () => {
-            _this.nextSong();
+            if (_this.isRepeat) {
+                _this.loadSong();
+                _this.audio.play();
+            } else {
+                _this.nextSong();
+            }
+        });
+
+        // Cập nhập progress bar theo event timeupdate có trong audio
+        _this.audio.addEventListener("timeupdate", _this.progress.bind(_this));
+
+        // Thay đổi progress khi click on bar
+        progressBar.addEventListener("click", (e) => {
+            let width = progressBar.clientWidth;
+            let clickX = e.offsetX;
+            let duration = _this.audio.duration;
+            _this.audio.currentTime = (clickX / width) * duration;
         });
     },
 
@@ -256,7 +295,10 @@ const app = {
     // Tạo hàm next,prev bài hát
     nextSong() {
         const length = this.songs.length;
-        if (this.currentIndex < length - 1) {
+        if (this.isRandom) {
+            this.shuffleSong();
+            this.loadSong();
+        } else if (this.currentIndex < length - 1) {
             this.currentIndex++;
         } else {
             this.currentIndex = 0;
@@ -265,12 +307,17 @@ const app = {
 
         if (this.isPlaying) {
             this.audio.play();
+        } else {
+            progressDot.style.transform = `translateX(0)`;
         }
     },
 
     prevSong() {
         const length = this.songs.length;
-        if (this.currentIndex > 0) {
+        if (this.isRandom) {
+            this.shuffleSong();
+            this.loadSong();
+        } else if (this.currentIndex > 0) {
             this.currentIndex--;
         } else {
             this.currentIndex = length - 1;
@@ -279,6 +326,21 @@ const app = {
 
         if (this.isPlaying) {
             this.audio.play();
+        } else {
+            progressDot.style.transform = `translateX(0)`;
+        }
+    },
+    // Tạo hàm random bài hát
+    shuffleSong() {
+        if (this.isRandom) {
+            this.currentIndex = Math.floor(Math.random() * this.songs.length);
+        }
+    },
+
+    // Tạo hàm repeat bài hát
+    repeatSong() {
+        if (this.isRepeat) {
+            this.currentIndex = this.currentIndex;
         }
     },
 
@@ -318,6 +380,25 @@ const app = {
 
         this.addToFavourites(index);
     },
+
+    // Xử lý việc cập nhập thời gian trên thanh progress bar
+    progress() {
+        let { duration, currentTime } = this.audio;
+
+        isNaN(duration) ? (duration = 0) : duration;
+        isNaN(currentTime) ? (currentTime = 0) : currentTime;
+
+        // Cập nhập Elements
+        currentTimeEl.innerHTML = formatTime(currentTime);
+        durationEl.innerHTML = formatTime(duration);
+
+        // Cập nhập di chuyển progress dot
+        let progressPercentage = (currentTime / duration) * 100;
+        let progressMeter =
+            progressPercentage * (progressBar.offsetWidth / 100);
+
+        progressDot.style.transform = `translateX(${progressMeter}px)`;
+    },
     start() {
         // Xử lý các events có trong chương trình
         this.handleEvents();
@@ -337,5 +418,9 @@ function formatTime(time) {
     // format like 1:15
     let minutes = Math.floor(time / 60);
     let seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds}`;
+
+    let times =
+        seconds < 10 ? `${minutes}:0${seconds}` : `${minutes}:${seconds}`;
+
+    return times;
 }
