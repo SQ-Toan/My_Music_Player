@@ -172,7 +172,6 @@ i.active {
 
 .list tr {
     --height: 50px;
-
     height: var(--height);
     text-align: center;
     background-color: #1d1d1d;

@@ -2,6 +2,7 @@ const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
 // Elements
+const container = $(".container");
 const menuBtn = $(".menu-btn");
 const coverImage = $(".cover-image");
 const cd = $(".cd");
@@ -102,12 +103,91 @@ const app = {
         });
 
         // Làm chức năng play pause bài hát
+        playPauseBtn.addEventListener("click", () => {
+            if (_this.isPlaying) {
+                // pause if already playing
+                playPauseBtn.classList.replace("fa-pause", "fa-play");
+                _this.isPlaying = false;
+                _this.audio.pause();
+            } else {
+                playPauseBtn.classList.replace("fa-play", "fa-pause");
+                _this.isPlaying = true;
+                _this.audio.play();
+            }
+        });
+
+        // Làm chức năng next, prev bài hát
+        nextBtn.addEventListener("click", _this.nextSong.bind(_this));
+        prevBtn.addEventListener("click", _this.prevSong.bind(_this));
+
+        // Làm chức năng nhấn vào list bài hát, nhấn vào bài hát muốn phát
+        playlist.addEventListener("click", (e) => {
+            const tableListElement = e.target.closest("#playlist");
+            const songElement = e.target.closest(".song");
+            const heartElement = e.target.closest(".heart-beat");
+            const item = e.target.closest(".song");
+            const indexElements = $$(".song");
+
+            // Kiểm tra nếu không click vào song thì không làm gì cả
+            if (!item) return;
+
+            // Lấy index của item
+            const index = Array.from(indexElements).indexOf(item);
+
+            // Array.from(indexElements).forEach((item, index) => {
+            //     // Xử lý để khi click vào lấy ra index tương ứng
+            //     item.onclick = function () { //cách duyệt mảng gây lag web
+
+            // Kiểm tra nếu click vào 1 trong ba element trên thì không chuyển bài
+            if (!tableListElement || !songElement || !heartElement) {
+                _this.currentIndex = index;
+
+                // fix lại coverImage khi chuyển nhạc
+                setTimeout(() => {
+                    coverImage.style.background = `url(${
+                        _this.songs[_this.currentIndex].image
+                    }) no-repeat`;
+                    coverImage.style.backgroundSize = "cover";
+                    coverImage.style.backgroundPosition = "center";
+                }, 100);
+
+                // Làm audio "chơi" ngay khi chuyển bài
+                playPauseBtn.classList.replace("fa-play", "fa-pause");
+                _this.loadSong();
+                _this.audio.play();
+                _this.isPlaying = true;
+            }
+
+            // Chức năng thêm bài hát vào mục yêu thích
+            if (e.target === item.lastChild.lastElementChild) {
+                if (
+                    item.lastChild.lastElementChild.classList.contains(
+                        "fa-heart"
+                    )
+                ) {
+                    _this.addToFavourites(index);
+                    return;
+                }
+            }
+            //     };
+            // });
+        });
+
+        // Làm chức năng thêm vào yêu thích trên giao diện
+        favourite.addEventListener("click", () => {
+            favourite.classList.toggle("active");
+            _this.addToFavouritesOnScreen(_this.currentIndex);
+        });
+        // tự động chuyển bài khi bài nhạc hết
+        _this.audio.addEventListener("ended", () => {
+            _this.nextSong();
+        });
     },
 
     // Update danh sách nhạc hiện có
     updateSongs() {
         // Loại bỏ các elements đang tồn tại
-        playlist.innerHTMl = "";
+        playlist.innerHTML = "";
 
         this.songs.forEach((song, index) => {
             // extract dữ liệu từ song
@@ -128,11 +208,11 @@ const app = {
                          </td>
  
                          <td class="length">
-                             <h4>2:03</h4>
+                             <h4></h4>
                          </td>
  
                          <td>
-                             <i class="fa-solid fa-heart ${
+                             <i class="fa-solid fa-heart heart-beat ${
                                  isFavourite ? "active" : ""
                              }"></i>
                          </td>`;
@@ -142,20 +222,13 @@ const app = {
             const audioForDuration = new Audio(src);
             audioForDuration.addEventListener("loadedmetadata", () => {
                 const duration = audioForDuration.duration;
-                let songDuration = this.formatTime(duration);
+                let songDuration = formatTime(duration); // Tạo hàm format thời lượng audio
                 tr.querySelector(".length h4").innerText = songDuration;
             });
         });
     },
 
-    // Xử lý việc chuyển đổi thời gian video sang phút
-    formatTime(time) {
-        // format like 1:15
-        let minutes = Math.floor(time / 60);
-        let seconds = Math.floor(time % 60);
-        return `${minutes}:${seconds}`;
-    },
-
+    // Tải thông tin bài hát hiện tại
     loadSong() {
         // Cập nhập tên ca sĩ và tựa đề bài hát lên info
         info.innerHTML = `<h2>${this.songs[this.currentIndex].title}</h2>
@@ -169,11 +242,81 @@ const app = {
         cdThumb.style.backgroundSize = "cover";
         cdThumb.style.backgroundPosition = "center";
 
+        // Thêm src của bài hát hiện tại vào audio
+        this.audio.src = `${this.songs[this.currentIndex].src}`;
+
+        // Kiểm tra bài hát có trong danh sách yêu thích hay không để thêm class active vào heart
         if (this.favourites.includes(this.currentIndex)) {
             favourite.classList.add("active");
         } else {
             favourite.classList.remove("active");
         }
+    },
+
+    // Tạo hàm next,prev bài hát
+    nextSong() {
+        const length = this.songs.length;
+        if (this.currentIndex < length - 1) {
+            this.currentIndex++;
+        } else {
+            this.currentIndex = 0;
+        }
+        this.loadSong();
+
+        if (this.isPlaying) {
+            this.audio.play();
+        }
+    },
+
+    prevSong() {
+        const length = this.songs.length;
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+        } else {
+            this.currentIndex = length - 1;
+        }
+        this.loadSong();
+
+        if (this.isPlaying) {
+            this.audio.play();
+        }
+    },
+
+    // Xử lý việc thêm, xoá bài hát ở mục yêu thích trong menu bar
+    addToFavourites(index) {
+        const indexElements = $$(".song");
+        const item = indexElements[index];
+        const heartIcon = item.lastChild.lastElementChild;
+        // Nếu bài hát đã yêu thích thì remove
+        if (this.favourites.includes(index)) {
+            // Xoá khỏi danh sách yêu thích
+            this.favourites = this.favourites.filter((item) => item !== index);
+            heartIcon.classList.remove("active");
+
+            // Nếu bài hát hiện tại đang phát, cập nhập nút yêu thích
+            if (index === this.currentIndex) {
+                favourite.classList.remove("active");
+            }
+        } else {
+            // Nếu bài hát chưa yêu thích thì add
+            this.favourites.push(index);
+            // Cập nhập lại giao diện
+            heartIcon.classList.add("active");
+
+            // Check xem nếu bài hát yêu thích đang là bài hát đang phát thì active heart lên giao diện
+            if (index === this.currentIndex) {
+                favourite.classList.add("active");
+            }
+        }
+    },
+
+    // Xử lý thêm/ xoá yêu thích ở giao diện
+    addToFavouritesOnScreen(currentIndexSong) {
+        const indexElements = $$(".song");
+        const item = indexElements[currentIndexSong];
+        const index = Array.from(indexElements).indexOf(item);
+
+        this.addToFavourites(index);
     },
     start() {
         // Xử lý các events có trong chương trình
@@ -188,3 +331,11 @@ const app = {
 };
 
 app.start();
+
+// Xử lý việc chuyển đổi thời gian video sang phút
+function formatTime(time) {
+    // format like 1:15
+    let minutes = Math.floor(time / 60);
+    let seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds}`;
+}
