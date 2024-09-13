@@ -10,6 +10,9 @@ const playlist = $("#playlist");
 const info = $(".info");
 const currentSongTitle = $(".current-song-title");
 const favourite = $("#favourite");
+const playPauseBtn = $("#playpause");
+const nextBtn = $("#next");
+const prevBtn = $("#prev");
 
 // App
 const app = {
@@ -23,56 +26,56 @@ const app = {
         {
             title: "Đừng làm trái tim anh đau",
             singer: "Sơn Tùng-MTP",
-            image: "/assets/imgs/sontung.webp",
-            src: "/assets/audio/dung_lam_trai_tim_anh_dau.mp3",
+            image: "./assets/imgs/sontung.webp",
+            src: "./assets/audio/dung_lam_trai_tim_anh_dau.mp3",
         },
         {
             title: "Đi tìm tình yêu",
             singer: "MONO",
-            image: "/assets/imgs/mono.jpg",
-            src: "/assets/audio/di_tim_tinh_yeu.mp3",
+            image: "./assets/imgs/mono.jpg",
+            src: "./assets/audio/di_tim_tinh_yeu.mp3",
         },
         {
             title: "Bạn đời",
             singer: "KARIK ft. GDUCKY",
-            image: "/assets/imgs/karik_gducky.jpg",
-            src: "/assets/audio/ban_doi.mp3",
+            image: "./assets/imgs/karik_gducky.jpg",
+            src: "./assets/audio/ban_doi.mp3",
         },
         {
             title: "Cô gái m52",
             singer: "HUYR",
-            image: "/assets/imgs/huyr.jpg",
-            src: "/assets/audio/co_gai_m52.mp3",
+            image: "./assets/imgs/huyr.jpg",
+            src: "./assets/audio/co_gai_m52.mp3",
         },
         {
             title: "Hit me up",
             singer: "Binz",
-            image: "/assets/imgs/binz.jpg",
-            src: "/assets/audio/hit_me_up.mp3",
+            image: "./assets/imgs/binz.jpg",
+            src: "./assets/audio/hit_me_up.mp3",
         },
         {
             title: "Thằng điên",
             singer: "Justatee ft. Phương Ly",
-            image: "/assets/imgs/crazyman.jpg",
-            src: "/assets/audio/thang_dien.mp3",
+            image: "./assets/imgs/crazyman.jpg",
+            src: "./assets/audio/thang_dien.mp3",
         },
         {
             title: "This way",
             singer: "Cara",
-            image: "/assets/imgs/cara.jpg",
-            src: "/assets/audio/this_way.mp3",
+            image: "./assets/imgs/cara.jpg",
+            src: "./assets/audio/this_way.mp3",
         },
         {
             title: "Tuý âm",
             singer: "Xesi",
-            image: "/assets/imgs/xesi.jpg",
-            src: "/assets/audio/tuy_am.mp3",
+            image: "./assets/imgs/xesi.jpg",
+            src: "./assets/audio/tuy_am.mp3",
         },
         {
             title: "Yêu một người có lẽ",
             singer: "Lou Hoàng ft. Miu Lê",
-            image: "/assets/imgs/yeumotnguoicole.jpg",
-            src: "/assets/audio/yeu_mot_nguoi_co_le.mp3",
+            image: "./assets/imgs/yeumotnguoicole.jpg",
+            src: "./assets/audio/yeu_mot_nguoi_co_le.mp3",
         },
     ],
     handleEvents() {
@@ -97,6 +100,8 @@ const app = {
                     "linear-gradient(to top, rgba(255, 0, 0, 0), rgba(109, 213, 237, .7))";
             }
         });
+
+        // Làm chức năng play pause bài hát
     },
 
     // Update danh sách nhạc hiện có
