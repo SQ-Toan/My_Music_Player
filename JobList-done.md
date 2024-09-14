@@ -17,3 +17,5 @@
 15. Làm chức năng hiển thị thời lượng audio và thời gian hiện tại audio đã play.
 16. Cập nhập Progress dot khi audio playing.
 17. Làm chức năng tua bài hát.
+18. Làm hiệu ứng beat effect cho cd
+19. Thiết kế volume bar.

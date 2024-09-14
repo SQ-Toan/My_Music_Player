@@ -20,6 +20,18 @@ const progressBar = $(".bar");
 const progressDot = $(".dot");
 const currentTimeEl = $(".current-time");
 const durationEl = $(".duration");
+const audio = $("#audio");
+
+// Variables
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const analyser = audioContext.createAnalyser();
+const source = audioContext.createMediaElementSource(audio);
+source.connect(analyser);
+analyser.connect(audioContext.destination);
+
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
 
 // App
 const app = {
@@ -28,7 +40,6 @@ const app = {
     isRepeat: false,
     currentIndex: 0,
     favourites: [],
-    audio: new Audio(),
     songs: [
         {
             title: "Đừng làm trái tim anh đau",
@@ -114,11 +125,11 @@ const app = {
                 // pause if already playing
                 playPauseBtn.classList.replace("fa-pause", "fa-play");
                 _this.isPlaying = false;
-                _this.audio.pause();
+                audio.pause();
             } else {
                 playPauseBtn.classList.replace("fa-play", "fa-pause");
                 _this.isPlaying = true;
-                _this.audio.play();
+                audio.play();
             }
         });
 
@@ -160,7 +171,7 @@ const app = {
                 // Làm audio "chơi" ngay khi chuyển bài
                 playPauseBtn.classList.replace("fa-play", "fa-pause");
                 _this.loadSong();
-                _this.audio.play();
+                audio.play();
                 _this.isPlaying = true;
             }
 
@@ -202,24 +213,32 @@ const app = {
         });
 
         // Tự động chuyển bài khi bài nhạc hết
-        _this.audio.addEventListener("ended", () => {
+        audio.addEventListener("ended", () => {
             if (_this.isRepeat) {
                 _this.loadSong();
-                _this.audio.play();
+                audio.play();
             } else {
                 _this.nextSong();
             }
         });
 
         // Cập nhập progress bar theo event timeupdate có trong audio
-        _this.audio.addEventListener("timeupdate", _this.progress.bind(_this));
+        audio.addEventListener("timeupdate", _this.progress.bind(_this));
 
         // Thay đổi progress khi click on bar
         progressBar.addEventListener("click", (e) => {
             let width = progressBar.clientWidth;
             let clickX = e.offsetX;
-            let duration = _this.audio.duration;
-            _this.audio.currentTime = (clickX / width) * duration;
+            let duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        });
+
+        // Làm hiệu ứng beat Effect cho CD Thumb
+        audio.addEventListener("play", () => {
+            if (audioContext.state === "suspended") {
+                audioContext.resume();
+            }
+            _this.animateThumb();
         });
     },
 
@@ -282,7 +301,7 @@ const app = {
         cdThumb.style.backgroundPosition = "center";
 
         // Thêm src của bài hát hiện tại vào audio
-        this.audio.src = `${this.songs[this.currentIndex].src}`;
+        audio.src = `${this.songs[this.currentIndex].src}`;
 
         // Kiểm tra bài hát có trong danh sách yêu thích hay không để thêm class active vào heart
         if (this.favourites.includes(this.currentIndex)) {
@@ -306,7 +325,7 @@ const app = {
         this.loadSong();
 
         if (this.isPlaying) {
-            this.audio.play();
+            audio.play();
         } else {
             progressDot.style.transform = `translateX(0)`;
         }
@@ -325,7 +344,7 @@ const app = {
         this.loadSong();
 
         if (this.isPlaying) {
-            this.audio.play();
+            audio.play();
         } else {
             progressDot.style.transform = `translateX(0)`;
         }
@@ -383,7 +402,7 @@ const app = {
 
     // Xử lý việc cập nhập thời gian trên thanh progress bar
     progress() {
-        let { duration, currentTime } = this.audio;
+        let { duration, currentTime } = audio;
 
         isNaN(duration) ? (duration = 0) : duration;
         isNaN(currentTime) ? (currentTime = 0) : currentTime;
@@ -398,6 +417,16 @@ const app = {
             progressPercentage * (progressBar.offsetWidth / 100);
 
         progressDot.style.transform = `translateX(${progressMeter}px)`;
+    },
+
+    // Xử lý hiệu ứng beat effect
+    animateThumb() {
+        requestAnimationFrame(this.animateThumb.bind(this));
+        analyser.getByteFrequencyData(dataArray);
+        const avgFrequency =
+            dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+        const scale = 1 + avgFrequency / 256;
+        cdThumb.style.transform = `scale(${scale})`;
     },
     start() {
         // Xử lý các events có trong chương trình
