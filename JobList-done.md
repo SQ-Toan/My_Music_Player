@@ -19,3 +19,4 @@
 17. Làm chức năng tua bài hát.
 18. Làm hiệu ứng beat effect cho cd
 19. Thiết kế volume bar.
+20. Làm chức năng volume.

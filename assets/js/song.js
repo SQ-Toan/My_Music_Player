@@ -21,6 +21,11 @@ const progressDot = $(".dot");
 const currentTimeEl = $(".current-time");
 const durationEl = $(".duration");
 const audio = $("#audio");
+const increaseVolumeBtn = $(".increase-volume");
+const decreaseVolumeBtn = $(".decrease-volume");
+const volumeBar = $(".volume-bar--white");
+const volumeValue = $(".volume-value");
+const mainVolumeBar = $(".volume-bar");
 
 // Variables
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -240,6 +245,33 @@ const app = {
             }
             _this.animateThumb();
         });
+
+        // Làm nút tăng/giảm âm lượng
+        increaseVolumeBtn.addEventListener("click", () => {
+            if (audio.volume < 1) {
+                _this.increaseVolume();
+            } else {
+                return;
+            }
+        });
+
+        decreaseVolumeBtn.addEventListener("click", () => {
+            if (audio.volume > 0) {
+                _this.decreaseVolume();
+            } else {
+                return;
+            }
+        });
+
+        // Chọn mức âm lượng bằng cách nhấn vào thanh bar
+        mainVolumeBar.addEventListener("click", (e) => {
+            let width = mainVolumeBar.clientWidth;
+            let clickX = e.offsetX;
+            console.log(width, clickX);
+            volumeBar.style.left = `${(clickX / width) * 100}%`;
+            audio.volume = (clickX / width).toFixed(2);
+            volumeValue.innerHTML = ((clickX / width) * 100).toFixed(0);
+        });
     },
 
     // Update danh sách nhạc hiện có
@@ -428,6 +460,29 @@ const app = {
         const scale = 1 + avgFrequency / 256;
         cdThumb.style.transform = `scale(${scale})`;
     },
+
+    // Xử lý giá trị âm thanh
+    increaseVolume() {
+        let currentVolume = audio.volume * 100 + 1;
+        audio.volume = (currentVolume / 100).toFixed(2);
+
+        // Cập nhập lên trên volumeValue
+        volumeValue.innerHTML = currentVolume.toFixed(0);
+
+        // Cập nhập volumeBar
+        volumeBar.style.left = `${currentVolume}%`;
+    },
+    decreaseVolume() {
+        let currentVolume = audio.volume * 100 - 1;
+        audio.volume = (currentVolume / 100).toFixed(2);
+
+        // Cập nhập lên trên volumeValue
+        volumeValue.innerHTML = currentVolume.toFixed(0);
+
+        // Cập nhập volumeBar
+        volumeBar.style.left = `${currentVolume}%`;
+    },
+
     start() {
         // Xử lý các events có trong chương trình
         this.handleEvents();
