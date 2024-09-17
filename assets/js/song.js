@@ -512,7 +512,7 @@ const app = {
             : [];
 
         this.currentIndex = this.config["currentIndex"]
-            ? this.currentIndex["currentIndex"]
+            ? this.config["currentIndex"]
             : 0;
     },
 
