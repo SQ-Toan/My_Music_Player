@@ -20,3 +20,4 @@
 18. Làm hiệu ứng beat effect cho cd
 19. Thiết kế volume bar.
 20. Làm chức năng volume.
+21. Cài đặt config cho ứng dụng: Lưu chức năng repeat, random, danh sách bài hát yêu thích đã lưu, hiển thị bài hát đang hát khi reload page.

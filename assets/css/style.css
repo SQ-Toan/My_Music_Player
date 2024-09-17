@@ -70,6 +70,7 @@ textarea {
 i {
     cursor: pointer;
     transition: all 0.3s ease;
+    filter: drop-shadow(0px 0px 0.5px #000);
 }
 i:hover {
     color: #106f9b;
@@ -104,7 +105,7 @@ i.active {
     background: linear-gradient(
         to top,
         rgba(255, 0, 0, 0),
-        rgba(109, 213, 237, 0.7)
+        rgba(109, 213, 237, 0.4)
     );
     transform-origin: 0% 0%;
     transition: all 0.3s ease;
@@ -116,10 +117,25 @@ i.active {
     border-radius: 20px;
 }
 .cd {
+    position: relative;
     display: flex;
     margin: 0 auto;
     width: 150px;
     border-radius: 50%;
+}
+.cd::before {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-top: 100%;
+    border-radius: 50%;
+    background-color: #666;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5), 0 0 6px rgba(255, 255, 255, 0.6);
+    transform: scale(1.4);
 }
 .cd-thumb {
     width: 100%;
@@ -362,6 +378,17 @@ i.active {
     height: 100%;
     border-radius: 6px;
     padding: 3px 0;
+    background: #fff;
+}
+.volume-bar--color {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    right: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 3px 0;
+    border-radius: 6px;
     background: linear-gradient(
         90deg,
         #d7ccc8 35%,
@@ -369,20 +396,9 @@ i.active {
         #4fc3f7 80%,
         #01579b 100%
     );
-}
-.volume-bar--white {
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 100%;
-    padding: 3px 0;
-    border-radius: 6px;
-    background: #fff;
     transition: all 0.3s ease;
 }
-.container.active .volume-bar--white {
+.container.active .volume-bar {
     background-color: #111;
 }
 

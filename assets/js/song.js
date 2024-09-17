@@ -1,5 +1,6 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
+const PLAYER_STORAGE_KEY = "Avocado_Player";
 
 // Elements
 const container = $(".container");
@@ -23,7 +24,7 @@ const durationEl = $(".duration");
 const audio = $("#audio");
 const increaseVolumeBtn = $(".increase-volume");
 const decreaseVolumeBtn = $(".decrease-volume");
-const volumeBar = $(".volume-bar--white");
+const volumeBar = $(".volume-bar--color");
 const volumeValue = $(".volume-value");
 const mainVolumeBar = $(".volume-bar");
 
@@ -45,6 +46,11 @@ const app = {
     isRepeat: false,
     currentIndex: 0,
     favourites: [],
+    config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
+    setConfig(key, value) {
+        this.config[key] = value;
+        localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
+    },
     songs: [
         {
             title: "Đừng làm trái tim anh đau",
@@ -120,7 +126,7 @@ const app = {
                     cd.style.visibility = "visible";
                 }, 180);
                 coverImage.style.background =
-                    "linear-gradient(to top, rgba(255, 0, 0, 0), rgba(109, 213, 237, .7))";
+                    "linear-gradient(to top, rgba(255, 0, 0, 0), rgba(109, 213, 237, .4))";
             }
         });
 
@@ -198,12 +204,14 @@ const app = {
         // Làm chức năng thêm vào yêu thích trên giao diện
         favourite.addEventListener("click", () => {
             favourite.classList.toggle("active");
+
             _this.addToFavouritesOnScreen(_this.currentIndex);
         });
 
         // Làm chức năng random bài hát
         shuffleBtn.addEventListener("click", () => {
             _this.isRandom = !_this.isRandom;
+            _this.setConfig("isRandom", _this.isRandom);
             shuffleBtn.classList.toggle("active");
 
             _this.shuffleSong();
@@ -212,6 +220,7 @@ const app = {
         // Làm chức năng repeat bài hát
         repeatBtn.addEventListener("click", () => {
             _this.isRepeat = !_this.isRepeat;
+            _this.setConfig("isRepeat", _this.isRepeat);
             repeatBtn.classList.toggle("active");
 
             _this.repeatSong();
@@ -267,8 +276,7 @@ const app = {
         mainVolumeBar.addEventListener("click", (e) => {
             let width = mainVolumeBar.clientWidth;
             let clickX = e.offsetX;
-            console.log(width, clickX);
-            volumeBar.style.left = `${(clickX / width) * 100}%`;
+            volumeBar.style.right = `${100 - (clickX / width) * 100}%`;
             audio.volume = (clickX / width).toFixed(2);
             volumeValue.innerHTML = ((clickX / width) * 100).toFixed(0);
         });
@@ -341,6 +349,10 @@ const app = {
         } else {
             favourite.classList.remove("active");
         }
+
+        // Hiện thị thanh volume
+        let currentVolume = (audio.volume * 100).toFixed(0);
+        volumeBar.style.right = `calc(100% - ${currentVolume}%)`;
     },
 
     // Tạo hàm next,prev bài hát
@@ -361,6 +373,8 @@ const app = {
         } else {
             progressDot.style.transform = `translateX(0)`;
         }
+
+        this.setConfig("currentIndex", this.currentIndex);
     },
 
     prevSong() {
@@ -380,6 +394,8 @@ const app = {
         } else {
             progressDot.style.transform = `translateX(0)`;
         }
+
+        this.setConfig("currentIndex", this.currentIndex);
     },
     // Tạo hàm random bài hát
     shuffleSong() {
@@ -410,6 +426,7 @@ const app = {
             if (index === this.currentIndex) {
                 favourite.classList.remove("active");
             }
+            this.setConfig("favourites", this.favourites);
         } else {
             // Nếu bài hát chưa yêu thích thì add
             this.favourites.push(index);
@@ -420,7 +437,10 @@ const app = {
             if (index === this.currentIndex) {
                 favourite.classList.add("active");
             }
+            this.setConfig("favourites", this.favourites);
         }
+
+        console.log(this.favourites);
     },
 
     // Xử lý thêm/ xoá yêu thích ở giao diện
@@ -470,7 +490,7 @@ const app = {
         volumeValue.innerHTML = currentVolume.toFixed(0);
 
         // Cập nhập volumeBar
-        volumeBar.style.left = `${currentVolume}%`;
+        volumeBar.style.right = `calc(100% - ${currentVolume}%)`;
     },
     decreaseVolume() {
         let currentVolume = audio.volume * 100 - 1;
@@ -480,10 +500,29 @@ const app = {
         volumeValue.innerHTML = currentVolume.toFixed(0);
 
         // Cập nhập volumeBar
-        volumeBar.style.left = `${currentVolume}%`;
+        volumeBar.style.right = `calc(100% - ${currentVolume}%)`;
     },
 
+    // Load config trên localStorage
+    loadConfig() {
+        this.isRandom = this.config["isRandom"];
+        this.isRepeat = this.config["isRepeat"];
+        this.favourites = this.config["favourites"]
+            ? this.config["favourites"]
+            : [];
+
+        this.currentIndex = this.config["currentIndex"];
+    },
+
+    // Hiển thị các chức năng đã lưu dựa trên config
+    loadFunctionBaseOnConfig() {
+        this.isRepeat && repeatBtn.classList.toggle("active");
+        this.isRandom && shuffleBtn.classList.toggle("active");
+    },
     start() {
+        // Load config cho ứng dụng
+        this.loadConfig();
+        this.loadFunctionBaseOnConfig();
         // Xử lý các events có trong chương trình
         this.handleEvents();
 
@@ -508,3 +547,6 @@ function formatTime(time) {
 
     return times;
 }
+
+console.log(app.config);
+console.log(app.favourites);
