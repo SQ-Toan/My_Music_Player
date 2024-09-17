@@ -511,7 +511,9 @@ const app = {
             ? this.config["favourites"]
             : [];
 
-        this.currentIndex = this.config["currentIndex"];
+        this.currentIndex = this.config["currentIndex"]
+            ? this.currentIndex["currentIndex"]
+            : 0;
     },
 
     // Hiển thị các chức năng đã lưu dựa trên config
