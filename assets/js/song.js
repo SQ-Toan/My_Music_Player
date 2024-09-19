@@ -38,7 +38,62 @@ analyser.connect(audioContext.destination);
 analyser.fftSize = 256;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
-
+const songs = [
+    {
+        title: "Đừng làm trái tim anh đau",
+        singer: "Sơn Tùng-MTP",
+        image: "assets/imgs/sontung.webp",
+        src: "assets/audio/dung_lam_trai_tim_anh_dau.mp3",
+    },
+    {
+        title: "Đi tìm tình yêu",
+        singer: "MONO",
+        image: "assets/imgs/mono.jpg",
+        src: "assets/audio/di_tim_tinh_yeu.mp3",
+    },
+    {
+        title: "Bạn đời",
+        singer: "KARIK ft. GDUCKY",
+        image: "assets/imgs/karik_gducky.jpg",
+        src: "assets/audio/ban_doi.mp3",
+    },
+    {
+        title: "Cô gái m52",
+        singer: "HUYR",
+        image: "assets/imgs/huyr.jpg",
+        src: "assets/audio/co_gai_m52.mp3",
+    },
+    {
+        title: "Hit me up",
+        singer: "Binz",
+        image: "assets/imgs/binz.jpg",
+        src: "assets/audio/hit_me_up.mp3",
+    },
+    {
+        title: "Thằng điên",
+        singer: "Justatee ft. Phương Ly",
+        image: "assets/imgs/crazyman.jpg",
+        src: "assets/audio/thang_dien.mp3",
+    },
+    {
+        title: "This way",
+        singer: "Cara",
+        image: "assets/imgs/cara.jpg",
+        src: "assets/audio/this_way.mp3",
+    },
+    {
+        title: "Tuý âm",
+        singer: "Xesi",
+        image: "assets/imgs/xesi.jpg",
+        src: "assets/audio/tuy_am.mp3",
+    },
+    {
+        title: "Yêu một người có lẽ",
+        singer: "Lou Hoàng ft. Miu Lê",
+        image: "assets/imgs/yeumotnguoicole.jpg",
+        src: "assets/audio/yeu_mot_nguoi_co_le.mp3",
+    },
+];
 // App
 const app = {
     isPlaying: false,
@@ -51,62 +106,8 @@ const app = {
         this.config[key] = value;
         localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
     },
-    songs: [
-        {
-            title: "Đừng làm trái tim anh đau",
-            singer: "Sơn Tùng-MTP",
-            image: "assets/imgs/sontung.webp",
-            src: "assets/audio/dung_lam_trai_tim_anh_dau.mp3",
-        },
-        {
-            title: "Đi tìm tình yêu",
-            singer: "MONO",
-            image: "assets/imgs/mono.jpg",
-            src: "assets/audio/di_tim_tinh_yeu.mp3",
-        },
-        {
-            title: "Bạn đời",
-            singer: "KARIK ft. GDUCKY",
-            image: "assets/imgs/karik_gducky.jpg",
-            src: "assets/audio/ban_doi.mp3",
-        },
-        {
-            title: "Cô gái m52",
-            singer: "HUYR",
-            image: "assets/imgs/huyr.jpg",
-            src: "assets/audio/co_gai_m52.mp3",
-        },
-        {
-            title: "Hit me up",
-            singer: "Binz",
-            image: "assets/imgs/binz.jpg",
-            src: "assets/audio/hit_me_up.mp3",
-        },
-        {
-            title: "Thằng điên",
-            singer: "Justatee ft. Phương Ly",
-            image: "assets/imgs/crazyman.jpg",
-            src: "assets/audio/thang_dien.mp3",
-        },
-        {
-            title: "This way",
-            singer: "Cara",
-            image: "assets/imgs/cara.jpg",
-            src: "assets/audio/this_way.mp3",
-        },
-        {
-            title: "Tuý âm",
-            singer: "Xesi",
-            image: "assets/imgs/xesi.jpg",
-            src: "assets/audio/tuy_am.mp3",
-        },
-        {
-            title: "Yêu một người có lẽ",
-            singer: "Lou Hoàng ft. Miu Lê",
-            image: "assets/imgs/yeumotnguoicole.jpg",
-            src: "assets/audio/yeu_mot_nguoi_co_le.mp3",
-        },
-    ],
+    randomSongs: [],
+    songs,
     handleEvents() {
         const _this = this;
         // Làm Menu Button
@@ -213,8 +214,6 @@ const app = {
             _this.isRandom = !_this.isRandom;
             _this.setConfig("isRandom", _this.isRandom);
             shuffleBtn.classList.toggle("active");
-
-            _this.shuffleSong();
         });
 
         // Làm chức năng repeat bài hát
@@ -337,9 +336,20 @@ const app = {
         cdThumb.style.background = `url(${
             this.songs[this.currentIndex].image
         }) no-repeat`;
+
         cdThumb.style.backgroundSize = "cover";
         cdThumb.style.backgroundPosition = "center";
 
+        if ($(".container.active")) {
+            cd.style.visibility = "hidden";
+            setTimeout(() => {
+                coverImage.style.background = `url(${
+                    this.songs[this.currentIndex].image
+                }) no-repeat`;
+                coverImage.style.backgroundSize = "cover";
+                coverImage.style.backgroundPosition = "center";
+            }, 100);
+        }
         // Thêm src của bài hát hiện tại vào audio
         audio.src = `${this.songs[this.currentIndex].src}`;
 
@@ -359,14 +369,17 @@ const app = {
     nextSong() {
         const length = this.songs.length;
         if (this.isRandom) {
-            this.shuffleSong();
+            this.handleShuffleSong();
             this.loadSong();
-        } else if (this.currentIndex < length - 1) {
-            this.currentIndex++;
         } else {
-            this.currentIndex = 0;
+            if (this.currentIndex < length - 1) {
+                this.currentIndex++;
+                console.log(this.currentIndex);
+            } else {
+                this.currentIndex = 0;
+            }
+            this.loadSong();
         }
-        this.loadSong();
 
         if (this.isPlaying) {
             audio.play();
@@ -380,14 +393,17 @@ const app = {
     prevSong() {
         const length = this.songs.length;
         if (this.isRandom) {
-            this.shuffleSong();
+            this.handleShuffleSong();
             this.loadSong();
-        } else if (this.currentIndex > 0) {
-            this.currentIndex--;
         } else {
-            this.currentIndex = length - 1;
+            if (this.currentIndex > 0) {
+                this.currentIndex--;
+                console.log(this.currentIndex);
+            } else {
+                this.currentIndex = length - 1;
+            }
+            this.loadSong();
         }
-        this.loadSong();
 
         if (this.isPlaying) {
             audio.play();
@@ -400,10 +416,33 @@ const app = {
     // Tạo hàm random bài hát
     shuffleSong() {
         if (this.isRandom) {
-            this.currentIndex = Math.floor(Math.random() * this.songs.length);
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * this.songs.length);
+            } while (newIndex === this.currentIndex);
+            this.currentIndex = newIndex;
         }
     },
 
+    // Tạo hàm xử lý việc bị lặp 1 bài hát nhiều lần khi random
+    handleShuffleSong() {
+        // Thêm bài hát hiện tại vào danh sách randomSongs nếu chưa có
+        if (!this.randomSongs.includes(this.currentIndex)) {
+            this.randomSongs.push(this.currentIndex);
+        }
+
+        // Nếu danh sách lặp đã đầy, khôi phục lại danh sách lặp và lặp lại từ đầu
+        if (this.randomSongs.length === this.songs.length) {
+            this.randomSongs = [];
+        }
+
+        // Kiểm tra nếu bài hát random đã được lặp thì chọn bài hát mới
+        do {
+            this.shuffleSong();
+        } while (this.randomSongs.includes(this.currentIndex));
+    },
+
+    //
     // Tạo hàm repeat bài hát
     repeatSong() {
         if (this.isRepeat) {
@@ -549,6 +588,3 @@ function formatTime(time) {
 
     return times;
 }
-
-console.log(app.config);
-console.log(app.favourites);

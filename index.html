@@ -125,6 +125,10 @@
         <meta name="theme-color" content="#ffffff" />
     </head>
     <body>
+        <!-- Snow falling -->
+        <div class="snowflakes"></div>
+
+        <!-- Container -->
         <div class="container">
             <div class="top">
                 <i class="fa-solid fa-bars menu-btn"></i>
@@ -190,6 +194,17 @@
             <p class="current-song-title"></p>
         </div>
 
+        <!-- Switch button -->
+        <label for="theme-toggle" class="switch-wrapper">
+            <input type="checkbox" class="switch" id="theme-toggle" hidden />
+
+            <span id="switch-btn"
+                ><i class="fa-regular fa-lightbulb switch-icon"></i
+            ></span>
+        </label>
+        <!-- File js -->
         <script src="./assets/js/song.js"></script>
+        <script src="./assets/js/toggle_button.js"></script>
+        <script src="./assets/js/snows.js"></script>
     </body>
 </html>

@@ -21,3 +21,7 @@
 19. Thiết kế volume bar.
 20. Làm chức năng volume.
 21. Cài đặt config cho ứng dụng: Lưu chức năng repeat, random, danh sách bài hát yêu thích đã lưu, hiển thị bài hát đang hát khi reload page.
+22. Xử lý chức năng random bài hát: Không cho 1 bài hát được lặp lại nhiều lần, tắt chức năng random thì phát theo danh sách gốc.
+23. Làm chức năng toggle switch chuyển đổi giao diện sáng/ tối.
+24. Lưu vào localStorage giao diện hiện tại để khi mở thì mở đúng giao diện đã lưu.
+25. Làm hiệu ứng tuyết rơi vô hạn.
